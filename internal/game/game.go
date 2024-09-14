@@ -2,8 +2,8 @@ package game
 
 import (
 	"fmt"
+	"goinvaders/internal/tools"
 	"image/color"
-	"os"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
@@ -176,7 +176,7 @@ func (g *Game) CheckForCollisions() {
 		}
 		// If we deactivated some aliens, delete them
 		if deleteAliens {
-			g.aliens = FilterSlice(g.aliens,
+			g.aliens = tools.FilterSlice(g.aliens,
 				func(alien *Alien) bool {
 					return alien.active
 				})
@@ -193,7 +193,7 @@ func (g *Game) CheckForCollisions() {
 				}
 			}
 			if deleteBlocks {
-				obstacle.blocks = FilterSlice(obstacle.blocks,
+				obstacle.blocks = tools.FilterSlice(obstacle.blocks,
 					func(block *Block) bool {
 						return block.active
 					})
@@ -231,7 +231,7 @@ func (g *Game) CheckForCollisions() {
 				}
 			}
 			if deleteBlocks {
-				obstacle.blocks = FilterSlice(obstacle.blocks,
+				obstacle.blocks = tools.FilterSlice(obstacle.blocks,
 					func(block *Block) bool {
 						return block.active
 					})
@@ -250,7 +250,7 @@ func (g *Game) CheckForCollisions() {
 				}
 			}
 			if deleteBlocks {
-				obstacle.blocks = FilterSlice(obstacle.blocks,
+				obstacle.blocks = tools.FilterSlice(obstacle.blocks,
 					func(block *Block) bool {
 						return block.active
 					})
@@ -282,7 +282,7 @@ func (g *Game) Update() {
 	g.MoveAliens()
 
 	// delete inactive lasers
-	g.alienLasers = FilterSlice(g.alienLasers,
+	g.alienLasers = tools.FilterSlice(g.alienLasers,
 		func(laser *Laser) bool {
 			return laser.active
 		})
@@ -358,32 +358,4 @@ func (g *Game) GameOver() {
 	g.running = false
 	g.SaveHighScore()
 	rl.TraceLog(rl.LogInfo, "Game Over!")
-}
-
-func (g *Game) SaveHighScore() {
-	file, err := os.Create("highscore.txt")
-	if err != nil {
-		rl.TraceLog(rl.LogError, "Could not save high score to file")
-		return
-	}
-	fmt.Fprintf(file, "%d", g.highScore)
-	file.Close()
-}
-
-func (g *Game) LoadHighScore() {
-	file, err := os.Open("highscore.txt")
-
-	if err != nil {
-		rl.TraceLog(rl.LogError, "Could not open high score file")
-		return
-
-	}
-
-	defer file.Close()
-
-	_, err = fmt.Fscanf(file, "%d", &g.highScore)
-	if err != nil {
-		rl.TraceLog(rl.LogError, "Could not read high score value from file")
-		return
-	}
 }

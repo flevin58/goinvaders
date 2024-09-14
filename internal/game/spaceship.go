@@ -1,6 +1,8 @@
 package game
 
 import (
+	"goinvaders/internal/tools"
+
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
@@ -52,7 +54,7 @@ func (s *Spaceship) FireLaser() {
 
 func (s *Spaceship) Update() {
 	// delete inactive lasers
-	s.lasers = FilterSlice(s.lasers,
+	s.lasers = tools.FilterSlice(s.lasers,
 		func(laser *Laser) bool {
 			return laser.active
 		})
