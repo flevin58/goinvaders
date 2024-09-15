@@ -1,6 +1,10 @@
 package game
 
-import rl "github.com/gen2brain/raylib-go/raylib"
+import (
+	"goinvaders/internal/assets"
+
+	rl "github.com/gen2brain/raylib-go/raylib"
+)
 
 type MysteryShip struct {
 	image    rl.Texture2D
@@ -10,7 +14,7 @@ type MysteryShip struct {
 }
 
 func NewMysteryShip() MysteryShip {
-	image := rl.LoadTexture("assets/images/mystery.png")
+	image := assets.LoadTexture("mystery.png")
 	return MysteryShip{
 		image: image,
 	}

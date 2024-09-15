@@ -1,6 +1,7 @@
 package game
 
 import (
+	"goinvaders/internal/assets"
 	"goinvaders/internal/tools"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
@@ -15,7 +16,7 @@ type Spaceship struct {
 }
 
 func NewSpaceship() Spaceship {
-	image := rl.LoadTexture("assets/images/spaceship.png")
+	image := assets.LoadTexture("spaceship.png")
 	xpos := float32(rl.GetScreenWidth()-int(image.Width)) / 2
 	ypos := float32(rl.GetScreenHeight()-int(image.Height)) - 100
 	return Spaceship{
@@ -23,7 +24,7 @@ func NewSpaceship() Spaceship {
 		position:     rl.Vector2{X: xpos, Y: ypos},
 		lasers:       make([]*Laser, 0),
 		lastFireTime: 0,
-		laserSound:   rl.LoadSound("assets/sounds/laser.ogg"),
+		laserSound:   assets.LoadSound("laser.ogg"),
 	}
 }
 

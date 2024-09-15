@@ -2,6 +2,7 @@ package game
 
 import (
 	"fmt"
+	"goinvaders/internal/assets"
 	"goinvaders/internal/tools"
 	"image/color"
 
@@ -40,9 +41,9 @@ func New() Game {
 	game := Game{
 		spaceship:      NewSpaceship(),
 		mysteryship:    NewMysteryShip(),
-		font:           rl.LoadFontEx("assets/fonts/monogram.ttf", 64, nil, 0),
-		music:          rl.LoadMusicStream("assets/sounds/music.ogg"),
-		explosionSound: rl.LoadSound("assets/sounds/explosion.ogg"),
+		font:           assets.LoadFont("monogram.ttf"),
+		music:          assets.LoadMusic("music.ogg"),
+		explosionSound: assets.LoadSound("explosion.ogg"),
 	}
 
 	game.LoadAlienImages()
@@ -78,9 +79,9 @@ func (g *Game) ResetGame() {
 }
 
 func (g *Game) LoadAlienImages() {
-	g.alienImages[0] = rl.LoadTexture("assets/images/alien_1.png")
-	g.alienImages[1] = rl.LoadTexture("assets/images/alien_2.png")
-	g.alienImages[2] = rl.LoadTexture("assets/images/alien_3.png")
+	g.alienImages[0] = assets.LoadTexture("alien_1.png")
+	g.alienImages[1] = assets.LoadTexture("alien_2.png")
+	g.alienImages[2] = assets.LoadTexture("alien_3.png")
 }
 
 func (g *Game) CreateObstacles() {
