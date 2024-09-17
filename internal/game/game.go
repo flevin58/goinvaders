@@ -53,7 +53,6 @@ func New() Game {
 		mutemusic:      false,
 	}
 
-	//game.LoadAlienImages()
 	game.InitGame()
 	if !rl.IsMusicReady(game.music) {
 		rl.TraceLog(rl.LogError, "Music not ready")
@@ -204,8 +203,10 @@ func (g *Game) CheckForCollisions() {
 		}
 
 		// Check against mystery ship
-		if rl.CheckCollisionRecs(g.mysteryship.GetRect(), laser.GetRect()) {
-			rl.PlaySound(g.explosionSound)
+		if laser.CollidedWith(&g.mysteryship) {
+			if !g.mutesfx {
+				rl.PlaySound(g.explosionSound)
+			}
 			g.AddScore(500)
 			g.mysteryship.alive = false
 			laser.active = false
@@ -247,7 +248,7 @@ func (g *Game) CheckForCollisions() {
 		for _, obstacle := range g.obstacles {
 			deleteBlocks := false
 			for _, block := range obstacle.blocks {
-				if rl.CheckCollisionRecs(block.GetRect(), alien.GetRect()) {
+				if alien.CollidedWith(block) {
 					block.active = false
 					deleteBlocks = true
 				}
