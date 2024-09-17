@@ -13,6 +13,7 @@ type Spaceship struct {
 	lasers       []*Laser
 	lastFireTime float64
 	laserSound   rl.Sound
+	mute         bool
 }
 
 func NewSpaceship() Spaceship {
@@ -25,6 +26,7 @@ func NewSpaceship() Spaceship {
 		lasers:       make([]*Laser, 0),
 		lastFireTime: 0,
 		laserSound:   assets.LoadSound("laser.ogg"),
+		mute:         false,
 	}
 }
 
@@ -45,7 +47,9 @@ func (s *Spaceship) Reset() {
 
 func (s *Spaceship) FireLaser() {
 	if rl.GetTime()-s.lastFireTime >= 0.35 {
-		rl.PlaySound(s.laserSound)
+		if !s.mute {
+			rl.PlaySound(s.laserSound)
+		}
 		posx := int32(s.position.X) + s.image.Width/2 - 2
 		posy := int32(s.position.Y)
 		s.lasers = append(s.lasers, NewLaser(posx, posy, -6))

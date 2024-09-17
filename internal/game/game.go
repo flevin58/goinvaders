@@ -24,7 +24,6 @@ type Game struct {
 	spaceship          Spaceship
 	mysteryship        MysteryShip
 	obstacles          []*Obstacle
-	alienImages        [3]rl.Texture2D
 	aliens             []*Alien
 	aliensDirection    int32
 	alienLasers        []*Laser
@@ -39,6 +38,8 @@ type Game struct {
 	highScore          int32
 	music              rl.Music
 	explosionSound     rl.Sound
+	mutesfx            bool
+	mutemusic          bool
 }
 
 func New() Game {
@@ -48,6 +49,8 @@ func New() Game {
 		font:           assets.LoadFont("monogram.ttf"),
 		music:          assets.LoadMusic("music.ogg"),
 		explosionSound: assets.LoadSound("explosion.ogg"),
+		mutesfx:        false,
+		mutemusic:      false,
 	}
 
 	//game.LoadAlienImages()
@@ -165,7 +168,9 @@ func (g *Game) CheckForCollisions() {
 		deleteAliens := false
 		for _, alien := range g.aliens {
 			if laser.CollidedWith(alien) {
-				rl.PlaySound(g.explosionSound)
+				if !g.mutesfx {
+					rl.PlaySound(g.explosionSound)
+				}
 				g.AddScore(alien.GetScore())
 				alien.active = false
 				laser.active = false
@@ -349,6 +354,22 @@ func (g *Game) HandleInput() {
 		g.spaceship.MoveRight()
 	} else if rl.IsKeyDown(rl.KeySpace) {
 		g.spaceship.FireLaser()
+	}
+
+	// Pause/Resume music with key "M"
+	if rl.IsKeyPressed(rl.KeyM) {
+		g.mutemusic = !g.mutemusic
+		if g.mutemusic {
+			rl.PauseMusicStream(g.music)
+		} else {
+			rl.ResumeMusicStream(g.music)
+		}
+	}
+
+	// Pause/Resume sfx with key "S"
+	if rl.IsKeyPressed(rl.KeyS) {
+		g.mutesfx = !g.mutesfx
+		g.spaceship.mute = g.mutesfx
 	}
 }
 
