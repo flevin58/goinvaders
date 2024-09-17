@@ -29,6 +29,10 @@ func (l *Laser) GetRect() rl.Rectangle {
 	}
 }
 
+func (l *Laser) CollidedWith(other Collideable) bool {
+	return rl.CheckCollisionRecs(other.GetRect(), l.GetRect())
+}
+
 func (l *Laser) IsActive() bool {
 	return l.active
 }

@@ -9,6 +9,10 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
+type Collideable interface {
+	GetRect() rl.Rectangle
+}
+
 const alienLaserShootInterval float64 = 0.35
 
 var (
@@ -167,7 +171,7 @@ func (g *Game) CheckForCollisions() {
 		// Check against aliens
 		deleteAliens := false
 		for _, alien := range g.aliens {
-			if rl.CheckCollisionRecs(alien.GetRect(), laser.GetRect()) {
+			if laser.CollidedWith(alien) {
 				rl.PlaySound(g.explosionSound)
 				g.AddScore(alien.GetScore())
 				alien.active = false
@@ -187,7 +191,7 @@ func (g *Game) CheckForCollisions() {
 		for _, obstacle := range g.obstacles {
 			deleteBlocks := false
 			for _, block := range obstacle.blocks {
-				if rl.CheckCollisionRecs(block.GetRect(), laser.GetRect()) {
+				if laser.CollidedWith(block) {
 					block.active = false
 					laser.active = false
 					deleteBlocks = true
@@ -213,7 +217,7 @@ func (g *Game) CheckForCollisions() {
 	// Alien Lasers
 	for _, laser := range g.alienLasers {
 		// Alien lasers against Spaceship
-		if rl.CheckCollisionRecs(laser.GetRect(), g.spaceship.GetRect()) {
+		if laser.CollidedWith(&g.spaceship) {
 			laser.active = false
 			g.lives--
 			if g.lives == 0 {
@@ -225,7 +229,7 @@ func (g *Game) CheckForCollisions() {
 		for _, obstacle := range g.obstacles {
 			deleteBlocks := false
 			for _, block := range obstacle.blocks {
-				if rl.CheckCollisionRecs(block.GetRect(), laser.GetRect()) {
+				if laser.CollidedWith(block) {
 					block.active = false
 					laser.active = false
 					deleteBlocks = true
@@ -258,7 +262,7 @@ func (g *Game) CheckForCollisions() {
 			}
 		}
 		// Alien against Spaceship
-		if rl.CheckCollisionRecs(alien.GetRect(), g.spaceship.GetRect()) {
+		if alien.CollidedWith(&g.spaceship) {
 			g.GameOver()
 		}
 	}

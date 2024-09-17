@@ -27,6 +27,10 @@ func (a *Alien) GetRect() rl.Rectangle {
 	}
 }
 
+func (a *Alien) CollidedWith(other Collideable) bool {
+	return rl.CheckCollisionRecs(other.GetRect(), a.GetRect())
+}
+
 func (a *Alien) GetScore() int32 {
 	return a.alienType * 100
 }
