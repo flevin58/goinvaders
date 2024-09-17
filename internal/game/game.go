@@ -50,7 +50,7 @@ func New() Game {
 		explosionSound: assets.LoadSound("explosion.ogg"),
 	}
 
-	game.LoadAlienImages()
+	//game.LoadAlienImages()
 	game.InitGame()
 	if !rl.IsMusicReady(game.music) {
 		rl.TraceLog(rl.LogError, "Music not ready")
@@ -82,12 +82,6 @@ func (g *Game) ResetGame() {
 	g.obstacles = make([]*Obstacle, 0)
 }
 
-func (g *Game) LoadAlienImages() {
-	g.alienImages[0] = assets.LoadTexture("alien_1.png")
-	g.alienImages[1] = assets.LoadTexture("alien_2.png")
-	g.alienImages[2] = assets.LoadTexture("alien_3.png")
-}
-
 func (g *Game) CreateObstacles() {
 	obstacleWidth := GetObstacleWidth()
 	gap := (rl.GetScreenWidth() - (4 * obstacleWidth)) / 5
@@ -111,8 +105,7 @@ func (g *Game) CreateAliens() {
 		for col := range 11 {
 			posx := 75 + col*55
 			posy := 110 + row*55
-			img := g.alienImages[alienType-1]
-			g.aliens = append(g.aliens, NewAlien(img, alienType, int32(posx), int32(posy)))
+			g.aliens = append(g.aliens, NewAlien(alienType, int32(posx), int32(posy)))
 		}
 	}
 }

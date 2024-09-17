@@ -16,7 +16,7 @@ type Spaceship struct {
 }
 
 func NewSpaceship() Spaceship {
-	image := assets.LoadTexture("spaceship.png")
+	image := assets.GetSpaceshipImage()
 	xpos := float32(rl.GetScreenWidth()-int(image.Width)) / 2
 	ypos := float32(rl.GetScreenHeight()-int(image.Height)) - 100
 	return Spaceship{

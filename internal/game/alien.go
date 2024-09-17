@@ -1,6 +1,10 @@
 package game
 
-import rl "github.com/gen2brain/raylib-go/raylib"
+import (
+	"goinvaders/internal/assets"
+
+	rl "github.com/gen2brain/raylib-go/raylib"
+)
 
 type Alien struct {
 	alienType int32
@@ -9,11 +13,11 @@ type Alien struct {
 	active    bool
 }
 
-func NewAlien(image rl.Texture2D, alienType int32, xpos int32, ypos int32) *Alien {
+func NewAlien(alienType int32, xpos int32, ypos int32) *Alien {
 	return &Alien{
 		alienType: alienType,
 		position:  rl.Vector2{X: float32(xpos), Y: float32(ypos)},
-		image:     image,
+		image:     assets.GetAlienImage(alienType),
 		active:    true,
 	}
 }

@@ -14,9 +14,8 @@ type MysteryShip struct {
 }
 
 func NewMysteryShip() MysteryShip {
-	image := assets.LoadTexture("mystery.png")
 	return MysteryShip{
-		image: image,
+		image: assets.GetMysteryImage(),
 	}
 }
 

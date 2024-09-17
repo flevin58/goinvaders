@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker https://www.codeandweb.com/texturepacker -->
+<!-- $TexturePacker:SmartUpdate:caaf5bc6adb9366142bc915f95c561e0:f8ffcbaf18001eac494d3dc98fcb3599:d30878cc6ce8abeb134657d91db1e500$ -->
+<!--Format:
+n  => name of the sprite
+x  => sprite x pos in texture
+y  => sprite y pos in texture
+w  => sprite width (may be trimmed)
+h  => sprite height (may be trimmed)
+pX => x pos of the pivot point (relative to sprite width)
+pY => y pos of the pivot point (relative to sprite height)
+oX => sprite's x-corner offset (only available if trimmed)
+oY => sprite's y-corner offset (only available if trimmed)
+oW => sprite's original width (only available if trimmed)
+oH => sprite's original height (only available if trimmed)
+r => 'y' only set if sprite is rotated
+with polygon mode enabled:
+vertices   => points in sprite coordinate system (x0,y0,x1,y1,x2,y2, ...)
+verticesUV => points in sheet coordinate system (x0,y0,x1,y1,x2,y2, ...)
+triangles  => sprite triangulation, 3 vertex indices per triangle
+-->
+<TextureAtlas imagePath="ships.png" width="123" height="68">
+    <sprite n="alien_1.png" x="0" y="0" w="38" h="34"/>
+    <sprite n="alien_2.png" x="38" y="0" w="44" h="34"/>
+    <sprite n="alien_3.png" x="82" y="0" w="41" h="40"/>
+    <sprite n="mystery.png" x="0" y="40" w="58" h="25"/>
+    <sprite n="spaceship.png" x="58" y="40" w="44" h="28"/>
+</TextureAtlas>
