@@ -2,6 +2,7 @@ package assets
 
 import (
 	"embed"
+	"image/color"
 	"os"
 	"path"
 
@@ -10,6 +11,11 @@ import (
 
 //go:embed fonts images sounds
 var assetFS embed.FS
+
+var (
+	Grey   = color.RGBA{R: 29, G: 29, B: 27, A: 255}
+	Yellow = color.RGBA{R: 243, G: 216, B: 63, A: 255}
+)
 
 // Helper function to load any embedded file and return its data as []byte
 // On error a raylib log is written and the program exits
@@ -69,4 +75,8 @@ func LoadSound(filename string) rl.Sound {
 	data := getEmbeddedData(filename)
 	wave := rl.LoadWaveFromMemory(".ogg", data, int32(len(data)))
 	return rl.LoadSoundFromWave(wave)
+}
+
+func Font() rl.Font {
+	return LoadFont("monogram.ttf")
 }

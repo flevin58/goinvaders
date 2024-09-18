@@ -29,7 +29,7 @@ func main() {
 
 	game := game.New()
 
-	for !rl.WindowShouldClose() {
+	for !game.ShouldQuit() {
 		rl.BeginDrawing()
 		game.HandleInput()
 		game.Update()

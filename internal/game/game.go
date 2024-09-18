@@ -1,7 +1,6 @@
 package game
 
 import (
-	"fmt"
 	"goinvaders/internal/assets"
 	"goinvaders/internal/tools"
 	"image/color"
@@ -32,6 +31,8 @@ type Game struct {
 	msTimeLastSpawned  float64
 	lives              int32
 	running            bool
+	gameover           bool
+	quit               bool
 	font               rl.Font
 	level              int32
 	score              int32
@@ -65,6 +66,8 @@ func New() Game {
 func (g *Game) InitGame() {
 	g.aliensDirection = 1
 	g.running = true
+	g.quit = false
+	g.gameover = false
 	g.lives = 3
 	g.msSpawnInterval = float64(rl.GetRandomValue(10, 20))
 	g.msTimeLastSpawned = 0
@@ -297,13 +300,6 @@ func (g *Game) Update() {
 	}
 }
 
-func (g *Game) TextAt(posx int, posy int, text string, args ...any) {
-	if len(args) > 0 {
-		text = fmt.Sprintf(text, args...)
-	}
-	rl.DrawTextEx(g.font, text, rl.Vector2{X: float32(posx), Y: float32(posy)}, 34, 2, yellow)
-}
-
 func (g *Game) Draw() {
 	rl.ClearBackground(grey)
 
@@ -321,8 +317,8 @@ func (g *Game) Draw() {
 	g.TextAt(50, 15, "SCORE")
 	g.TextAt(50, 40, "%05d", g.score)
 
-	g.TextAt(570, 15, "HIGH SCORE")
-	g.TextAt(655, 40, "%05d", g.highScore)
+	g.TextAt(70, 15, "HIGH SCORE")
+	g.TextAt(55, 40, "%05d", g.highScore)
 
 	g.spaceship.Draw()
 	g.mysteryship.Draw()
@@ -338,23 +334,35 @@ func (g *Game) Draw() {
 	for _, laser := range g.alienLasers {
 		laser.Draw()
 	}
+
+	if g.gameover {
+		g.GameOverDraw()
+	}
+}
+
+func (g *Game) ShouldQuit() bool {
+	return g.quit || rl.WindowShouldClose()
 }
 
 func (g *Game) HandleInput() {
-	if !g.running {
-		if rl.IsKeyDown(rl.KeyEnter) {
+	if g.gameover {
+		switch g.GameOverUpdate() {
+		case Restart:
 			g.ResetGame()
 			g.InitGame()
+		case End:
+			g.quit = true
 		}
-		return
 	}
 
-	if rl.IsKeyDown(rl.KeyLeft) {
-		g.spaceship.MoveLeft()
-	} else if rl.IsKeyDown(rl.KeyRight) {
-		g.spaceship.MoveRight()
-	} else if rl.IsKeyDown(rl.KeySpace) {
-		g.spaceship.FireLaser()
+	if g.running {
+		if rl.IsKeyDown(rl.KeyLeft) {
+			g.spaceship.MoveLeft()
+		} else if rl.IsKeyDown(rl.KeyRight) {
+			g.spaceship.MoveRight()
+		} else if rl.IsKeyDown(rl.KeySpace) {
+			g.spaceship.FireLaser()
+		}
 	}
 
 	// Pause/Resume music with key "M"
@@ -375,6 +383,7 @@ func (g *Game) HandleInput() {
 }
 
 func (g *Game) GameOver() {
+	g.gameover = true
 	g.running = false
 	g.SaveHighScore()
 	rl.TraceLog(rl.LogInfo, "Game Over!")
