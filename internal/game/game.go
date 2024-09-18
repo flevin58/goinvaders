@@ -14,9 +14,22 @@ type Collideable interface {
 
 const alienLaserShootInterval float64 = 0.35
 
+type GameState int
+
+const (
+	Idle GameState = iota
+	Running
+	GameOver
+	LevelUp
+	Paused
+	Quit
+)
+
 var (
 	grey   = color.RGBA{R: 29, G: 29, B: 27, A: 255}
 	yellow = color.RGBA{R: 243, G: 216, B: 63, A: 255}
+	green  = color.RGBA{R: 11, G: 102, B: 35, A: 255}
+	red    = color.RGBA{R: 163, G: 22, B: 3, A: 255}
 )
 
 type Game struct {
@@ -30,9 +43,6 @@ type Game struct {
 	msSpawnInterval    float64
 	msTimeLastSpawned  float64
 	lives              int32
-	running            bool
-	gameover           bool
-	quit               bool
 	font               rl.Font
 	level              int32
 	score              int32
@@ -41,6 +51,7 @@ type Game struct {
 	explosionSound     rl.Sound
 	mutesfx            bool
 	mutemusic          bool
+	state              GameState
 }
 
 func New() Game {
@@ -63,21 +74,23 @@ func New() Game {
 	return game
 }
 
-func (g *Game) InitGame() {
+func (g *Game) InitLevel() {
+	g.level++
 	g.aliensDirection = 1
-	g.running = true
-	g.quit = false
-	g.gameover = false
-	g.lives = 3
 	g.msSpawnInterval = float64(rl.GetRandomValue(10, 20))
 	g.msTimeLastSpawned = 0
 	g.timeLastAlienFired = 0
-	g.level = 1
+	g.state = Running
+}
+
+func (g *Game) InitGame() {
+	g.lives = 3
+	g.level = 0
 	g.score = 0
 	g.highScore = 0
 	g.LoadHighScore()
-	g.CreateObstacles()
-	g.CreateAliens()
+	g.ResetGame()
+	g.InitLevel()
 }
 
 func (g *Game) ResetGame() {
@@ -85,6 +98,8 @@ func (g *Game) ResetGame() {
 	g.aliens = make([]*Alien, 0)
 	g.alienLasers = make([]*Laser, 0)
 	g.obstacles = make([]*Obstacle, 0)
+	g.CreateObstacles()
+	g.CreateAliens()
 }
 
 func (g *Game) CreateObstacles() {
@@ -186,6 +201,10 @@ func (g *Game) CheckForCollisions() {
 					return alien.active
 				})
 		}
+		// If now there are no more aliens, we won this level!
+		if len(g.aliens) == 0 {
+			g.state = LevelUp
+		}
 
 		// Check against blocks
 		for _, obstacle := range g.obstacles {
@@ -222,6 +241,7 @@ func (g *Game) CheckForCollisions() {
 		if laser.CollidedWith(&g.spaceship) {
 			laser.active = false
 			g.lives--
+			// TBD: spaceship explosion (sound and/or animation)
 			if g.lives == 0 {
 				g.GameOver()
 			}
@@ -271,7 +291,7 @@ func (g *Game) CheckForCollisions() {
 }
 
 func (g *Game) Update() {
-	if !g.running {
+	if g.state != Running {
 		return
 	}
 
@@ -306,10 +326,10 @@ func (g *Game) Draw() {
 	// Draw the GUI
 	rl.DrawRectangleRoundedLines(rl.Rectangle{X: 10, Y: 10, Width: 780, Height: 780}, 0.18, 20, 2, yellow)
 	rl.DrawLineEx(rl.Vector2{X: 25, Y: 730}, rl.Vector2{X: 775, Y: 730}, 3, yellow)
-	if g.running {
-		g.TextAt(570, 740, "LEVEL %02d", g.level)
-	} else {
+	if g.state == GameOver {
 		g.TextAt(570, 740, "GAME OVER")
+	} else {
+		g.TextAt(570, 740, "LEVEL %02d", g.level)
 	}
 	for i := range g.lives {
 		g.spaceship.DrawAt(50*(i+1), 745)
@@ -317,8 +337,8 @@ func (g *Game) Draw() {
 	g.TextAt(50, 15, "SCORE")
 	g.TextAt(50, 40, "%05d", g.score)
 
-	g.TextAt(70, 15, "HIGH SCORE")
-	g.TextAt(55, 40, "%05d", g.highScore)
+	g.TextAt(570, 15, "HIGH SCORE")
+	g.TextAt(570, 40, "%05d", g.highScore)
 
 	g.spaceship.Draw()
 	g.mysteryship.Draw()
@@ -335,27 +355,49 @@ func (g *Game) Draw() {
 		laser.Draw()
 	}
 
-	if g.gameover {
+	if g.state == GameOver {
 		g.GameOverDraw()
+	}
+
+	if g.state == LevelUp {
+		g.LevelUpDraw()
 	}
 }
 
 func (g *Game) ShouldQuit() bool {
-	return g.quit || rl.WindowShouldClose()
+	return g.state == Quit || rl.WindowShouldClose()
+}
+
+func (g *Game) HandleGameOverInput() {
+	if rl.IsKeyPressed(rl.KeyEscape) {
+		g.state = Quit
+	}
+	if rl.IsKeyPressed(rl.KeyEnter) {
+		g.ResetGame()
+		g.InitGame()
+	}
+}
+
+func (g *Game) HandleLevelUpInput() {
+	if rl.IsKeyPressed(rl.KeyEnter) {
+		g.ResetGame()
+		g.InitLevel()
+	}
 }
 
 func (g *Game) HandleInput() {
-	if g.gameover {
-		switch g.GameOverUpdate() {
-		case Restart:
-			g.ResetGame()
-			g.InitGame()
-		case End:
-			g.quit = true
-		}
+	if g.state == GameOver {
+		g.HandleGameOverInput()
+		return
 	}
 
-	if g.running {
+	if g.state == LevelUp {
+		g.HandleLevelUpInput()
+		return
+	}
+
+	// Handle movement and laser fire
+	if g.state == Running {
 		if rl.IsKeyDown(rl.KeyLeft) {
 			g.spaceship.MoveLeft()
 		} else if rl.IsKeyDown(rl.KeyRight) {
@@ -365,7 +407,16 @@ func (g *Game) HandleInput() {
 		}
 	}
 
-	// Pause/Resume music with key "M"
+	// Handle pause / resume
+	if rl.IsKeyPressed(rl.KeyP) {
+		if g.state == Paused {
+			g.state = Running
+		} else {
+			g.state = Paused
+		}
+	}
+
+	// Handle pause/Resume music
 	if rl.IsKeyPressed(rl.KeyM) {
 		g.mutemusic = !g.mutemusic
 		if g.mutemusic {
@@ -375,7 +426,7 @@ func (g *Game) HandleInput() {
 		}
 	}
 
-	// Pause/Resume sfx with key "S"
+	// Handle pause/Resume sfx
 	if rl.IsKeyPressed(rl.KeyS) {
 		g.mutesfx = !g.mutesfx
 		g.spaceship.mute = g.mutesfx
@@ -383,8 +434,7 @@ func (g *Game) HandleInput() {
 }
 
 func (g *Game) GameOver() {
-	g.gameover = true
-	g.running = false
+	g.state = GameOver
 	g.SaveHighScore()
 	rl.TraceLog(rl.LogInfo, "Game Over!")
 }
