@@ -9,5 +9,5 @@ import _ "embed"
 
 
 //go:embed monogram.ttf
-var Monogram_ttf []byte
+var Monogram_ttf string
 

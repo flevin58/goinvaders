@@ -1,5 +1,7 @@
 package main
 
+//go:generate embed -verbose -exclude_dir src -include ttf,png,xml,ogg -byte all internal/assets
+
 import (
 	"goinvaders/internal/game"
 

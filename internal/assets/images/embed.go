@@ -7,8 +7,10 @@ package images
 
 import _ "embed"
 
+
 //go:embed ships.png
-var Ships_png []byte
+var Ships_png string
 
 //go:embed ships.xml
-var Ships_xml []byte
+var Ships_xml string
+
