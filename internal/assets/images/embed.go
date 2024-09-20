@@ -9,8 +9,8 @@ import _ "embed"
 
 
 //go:embed ships.png
-var Ships_png string
+var Ships_png []byte
 
 //go:embed ships.xml
-var Ships_xml string
+var Ships_xml []byte
 

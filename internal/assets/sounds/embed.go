@@ -9,11 +9,11 @@ import _ "embed"
 
 
 //go:embed explosion.ogg
-var Explosion_ogg string
+var Explosion_ogg []byte
 
 //go:embed laser.ogg
-var Laser_ogg string
+var Laser_ogg []byte
 
 //go:embed music.ogg
-var Music_ogg string
+var Music_ogg []byte
 
