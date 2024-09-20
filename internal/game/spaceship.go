@@ -2,6 +2,7 @@ package game
 
 import (
 	"goinvaders/internal/assets"
+	"goinvaders/internal/assets/sounds"
 	"goinvaders/internal/tools"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
@@ -25,7 +26,7 @@ func NewSpaceship() Spaceship {
 		position:     rl.Vector2{X: xpos, Y: ypos},
 		lasers:       make([]*Laser, 0),
 		lastFireTime: 0,
-		laserSound:   assets.LoadSound("laser.ogg"),
+		laserSound:   assets.LoadSound(sounds.Laser_ogg),
 		mute:         false,
 	}
 }

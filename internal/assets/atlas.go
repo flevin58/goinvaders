@@ -3,8 +3,8 @@ package assets
 import (
 	"encoding/xml"
 	"fmt"
+	"goinvaders/internal/assets/images"
 	"os"
-	"path"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
@@ -32,22 +32,19 @@ type Atlas struct {
 	Sprites map[string]rl.Rectangle
 }
 
-var ShipAtlas = NewAtlas("ships")
+var ShipAtlas = NewAtlas(images.Ships_xml)
 
-func NewAtlas(atlasName string) *Atlas {
+func NewAtlas(xmlData []byte) *Atlas {
 
-	xmlFile := path.Join("images", atlasName+".xml")
-	xmlData := getEmbeddedData(xmlFile)
 	Ta := textureAtlas{}
 	err := xml.Unmarshal(xmlData, &Ta)
 	if err != nil {
-		rl.TraceLog(rl.LogError, "Could not unmarshal %s: %s", xmlFile, err.Error())
+		rl.TraceLog(rl.LogError, "Could not unmarshal the ships.xml data: %s", err.Error())
 		os.Exit(1)
 	}
 
-	pngFile := atlasName + ".png"
 	atlas := &Atlas{
-		Image:   LoadImage(pngFile),
+		Image:   LoadImage(images.Ships_png),
 		Sprites: make(map[string]rl.Rectangle),
 	}
 	for _, s := range Ta.Sprites {

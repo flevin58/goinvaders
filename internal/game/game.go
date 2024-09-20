@@ -2,6 +2,8 @@ package game
 
 import (
 	"goinvaders/internal/assets"
+	"goinvaders/internal/assets/fonts"
+	"goinvaders/internal/assets/sounds"
 	"goinvaders/internal/tools"
 	"image/color"
 
@@ -58,9 +60,9 @@ func New() Game {
 	game := Game{
 		spaceship:      NewSpaceship(),
 		mysteryship:    NewMysteryShip(),
-		font:           assets.LoadFont("monogram.ttf"),
-		music:          assets.LoadMusic("music.ogg"),
-		explosionSound: assets.LoadSound("explosion.ogg"),
+		font:           assets.LoadFont(fonts.Monogram_ttf),
+		music:          assets.LoadMusic(sounds.Music_ogg),
+		explosionSound: assets.LoadSound(sounds.Explosion_ogg),
 		mutesfx:        false,
 		mutemusic:      false,
 	}
